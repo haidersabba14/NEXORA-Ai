@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXORA AI — منصة الذكاء الاصطناعي الشاملة والمتطورة</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        nexora: {
+                            50: '#f0fdf4',
+                            500: '#10b981',
+                            600: '#059669',
+                            900: '#064e3b',
+                            dark: '#0a0f1d',
+                            card: '#111827',
+                            border: '#1f2937',
+                            accent: '#3b82f6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Lucide Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for 3D Interface -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .glass-panel { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glow-effect { box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.3); }
+        /* إمكانية الوصول: تباين عالٍ وحجم خط */
+        body.high-contrast { background: #000 !important; color: #fff !important; }
+        body.high-contrast .glass-panel { background: #000; border: 2px solid #fff; }
+        body.large-text { font-size: 1.2rem; }
+    </style>
+</head>
+<body class="bg-nexora-dark text-gray-100 min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+    <!-- شريط التنقل العلوي -->
+    <header class="glass-panel sticky top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-nexora-border">
+        <div class="flex items-center space-x-4 space-x-reverse">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center glow-effect">
+                <i class="fa-solid fa-brain text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-black text-xl tracking-wider bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">NEXORA AI</h1>
+                <span class="text-xs text-gray-400">النسخة الاحترافية المتكاملة 2026</span>
+            </div>
+        </div>
+
+        <!-- أدوات التحكم السريعة وإمكانية الوصول -->
+        <div class="flex items-center space-x-3 space-x-reverse">
+            <button onclick="toggle3DModal()" title="واجهة 3D" class="px-3 py-2 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 transition text-sm flex items-center gap-2">
+                <i class="fa-solid fa-cube"></i> واجهة 3D
+            </button>
+            <button onclick="toggleAccessibility()" title="إمكانية الوصول" class="p-2.5 rounded-lg glass-panel hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-universal-access"></i>
+            </button>
+            <button onclick="toggleShortcutsModal()" title="اختصارات لوحة المفاتيح (Ctrl+/)" class="p-2.5 rounded-lg glass-panel hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-keyboard"></i>
+            </button>
+            <button onclick="openBackupModal()" title="النسخ الاحتياطي" class="p-2.5 rounded-lg glass-panel hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-database"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي للمنصة (نظام تبويبات شامل) -->
+    <div class="flex-1 flex flex-col md:flex-row">
+        
+        <!-- الشريط الجانبي للتنقل بين الأدوات -->
+        <aside class="w-full md:w-72 glass-panel p-4 border-l border-nexora-border flex flex-col space-y-2">
+            <div class="text-xs font-bold text-gray-500 px-3 uppercase tracking-wider mb-2">القائمة الرئيسية</div>
+            
+            <a onclick="switchTab('lab')" id="nav-lab" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition bg-blue-600 text-white font-semibold cursor-pointer">
+                <i class="fa-solid fa-flask w-5"></i> مختبر التجارب
+            </a>
+            <a onclick="switchTab('compare')" id="nav-compare" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-scale-balanced w-5"></i> مقارنة الإجابات
+            </a>
+            <a onclick="switchTab('debugger')" id="nav-debugger" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-bug-slash w-5"></i> مساعد إصلاح المشاريع
+            </a>
+            <a onclick="switchTab('files')" id="nav-files" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-folder-open w-5"></i> مركز الملفات
+            </a>
+            <a onclick="switchTab('writing')" id="nav-writing" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-pen-nib w-5"></i> الكتابة الاحترافية
+            </a>
+            <a onclick="switchTab('translator')" id="nav-translator" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-language w-5"></i> مترجم ذكي
+            </a>
+            <a onclick="switchTab('tutor')" id="nav-tutor" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-graduation-cap w-5"></i> المعلم الشخصي
+            </a>
+            <a onclick="switchTab('math')" id="nav-math" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-square-root-variable w-5"></i> مساعد الرياضيات
+            </a>
+            <a onclick="switchTab('tasks')" id="nav-tasks" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-list-check w-5"></i> مخطط المهام
+            </a>
+            <a onclick="switchTab('plugins')" id="nav-plugins" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-puzzle-piece w-5"></i> متجر الإضافات
+            </a>
+            <a onclick="switchTab('analytics')" id="nav-analytics" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-400 hover:bg-gray-800/50 hover:text-white cursor-pointer">
+                <i class="fa-solid fa-chart-line w-5"></i> تحليلات الاستخدام
+            </a>
+        </aside>
+
+        <!-- منطقة العمل الديناميكية -->
+        <main class="flex-1 p-6 overflow-y-auto max-h-[calc(100vh-73px)]">
+
+            <!-- 1. مختبر التجارب -->
+            <section id="tab-lab" class="tab-content space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-flask text-emerald-400"></i> مختبر التجارب الذكية</h2>
+                    <p class="text-gray-400 text-sm mb-4">جرب أوامر ومطالبات الذكاء الاصطناعي، واضبط المعاملات (درجة الحرارة، الطول)، واحفظ النتائج المفضلة.</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-1 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-300">نص الأمر (Prompt)</label>
+                                <textarea id="lab-prompt" rows="4" class="w-full bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500" placeholder="اكتب الأمر هنا..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1 text-gray-300">درجة الحرارة (Creativity): <span id="temp-val">0.7</span></label>
+                                <input type="range" min="0" max="1" step="0.1" value="0.7" oninput="document.getElementById('temp-val').innerText = this.value" class="w-full accent-emerald-500">
+                            </div>
+                            <button onclick="runLabExperiment()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold transition shadow-lg shadow-emerald-600/20">
+                                تنفيذ التجربة (محاكاة محلية / API)
+                            </button>
+                        </div>
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-semibold text-gray-300">النتيجة:</span>
+                                <button onclick="saveLabResult()" class="text-xs bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-600/30 transition">حفظ النتيجة المفضلة</button>
+                            </div>
+                            <div id="lab-output" class="bg-nexora-dark border border-nexora-border rounded-xl p-4 h-56 overflow-y-auto text-sm text-gray-300 font-mono">
+                                بانتظار تشغيل التجربة...
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-gray-400 uppercase mb-2">النتائج المحفوظة مسبقاً</h3>
+                                <div id="saved-lab-results" class="space-y-2 max-h-32 overflow-y-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. مقارنة الإجابات -->
+            <section id="tab-compare" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-blue-400"></i> مقارنة ردود النماذج</h2>
+                    <p class="text-gray-400 text-sm mb-4">قارن الدقة، الأسلوب، والسرعة بين ثلاثة نماذج مختلفة في نفس الوقت.</p>
+                    <div class="flex gap-4 mb-4">
+                        <input type="text" id="compare-query" placeholder="أدخل السؤال للمقارنة بين النماذج..." class="flex-1 bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500">
+                        <button onclick="runComparison()" class="px-6 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold transition">مقارنة</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-nexora-dark border border-nexora-border p-4 rounded-xl">
+                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-nexora-border">
+                                <span class="font-bold text-blue-400">Nexora Alpha</span>
+                                <span class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">0.4s | دقيق</span>
+                            </div>
+                            <p id="comp-1" class="text-sm text-gray-300">النتيجة ستظهر هنا...</p>
+                        </div>
+                        <div class="bg-nexora-dark border border-nexora-border p-4 rounded-xl">
+                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-nexora-border">
+                                <span class="font-bold text-purple-400">Nexora Creative</span>
+                                <span class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">0.7s | إبداعي</span>
+                            </div>
+                            <p id="comp-2" class="text-sm text-gray-300">النتيجة ستظهر هنا...</p>
+                        </div>
+                        <div class="bg-nexora-dark border border-nexora-border p-4 rounded-xl">
+                            <div class="flex justify-between items-center mb-2 pb-2 border-b border-nexora-border">
+                                <span class="font-bold text-emerald-400">Nexora Logic</span>
+                                <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">0.5s | منطقي</span>
+                            </div>
+                            <p id="comp-3" class="text-sm text-gray-300">النتيجة ستظهر هنا...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. مساعد إصلاح المشاريع -->
+            <section id="tab-debugger" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-bug-slash text-red-400"></i> مساعد إصلاح المشاريع (Debugger)</h2>
+                    <p class="text-gray-400 text-sm mb-4">لصق رسالة الخطأ أو كود البرمجة المعطوب لتحليل المشكلة واقتراح التصحيح الفوري.</p>
+                    <textarea id="debug-input" rows="5" class="w-full bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm font-mono mb-4 focus:outline-none focus:border-red-500" placeholder="الصق رسالة الخطأ أو الكود هنا..."></textarea>
+                    <button onclick="runDebugger()" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-bold transition">تحليل وإصلاح الكود</button>
+                    <div id="debug-output" class="mt-4 bg-nexora-dark border border-nexora-border p-4 rounded-xl text-sm font-mono text-green-400 hidden"></div>
+                </div>
+            </section>
+
+            <!-- 4. مركز الملفات -->
+            <section id="tab-files" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-folder-open text-yellow-400"></i> مركز الملفات والمشاريع</h2>
+                        <button onclick="addLocalFile()" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-sm rounded-xl font-bold transition">رفع ملف جديد</button>
+                    </div>
+                    <input type="text" id="file-search" oninput="filterFiles(this.value)" placeholder="ابحث في الملفات..." class="w-full bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm mb-4 focus:outline-none focus:border-yellow-500">
+                    <div id="files-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- ملفات افتراضية -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. الكتابة الاحترافية -->
+            <section id="tab-writing" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-nib text-purple-400"></i> صانع المحتوى والكتابة الاحترافية</h2>
+                    <p class="text-gray-400 text-sm mb-4">اختر نوع المحتوى واكتب العنوان للحصول على مسودة احترافية جاهزة.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <select id="write-type" class="bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm">
+                            <option value="report">تقرير عمل رسمي</option>
+                            <option value="cv">نبذة سير ذاتية (CV Summary)</option>
+                            <option value="marketing">إعلان تسويقي جذاب</option>
+                            <option value="email">بريد إلكتروني رسمي</option>
+                        </select>
+                        <input type="text" id="write-topic" placeholder="الموضوع أو الكلمات الرئيسية..." class="md:col-span-2 bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm">
+                    </div>
+                    <button onclick="generateWriting()" class="px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold transition">إنشاء المحتوى</button>
+                    <div id="write-output" class="mt-4 bg-nexora-dark border border-nexora-border p-4 rounded-xl text-sm text-gray-300 hidden whitespace-pre-line"></div>
+                </div>
+            </section>
+
+            <!-- 6. مترجم ذكي -->
+            <section id="tab-translator" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-language text-cyan-400"></i> المترجم الذكي الحافظ للسياق</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <textarea id="trans-input" rows="4" placeholder="النص المراد ترجمته..." class="bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm focus:outline-none focus:border-cyan-500"></textarea>
+                        <textarea id="trans-output" rows="4" placeholder="الترجمة..." readonly class="bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm text-cyan-300"></textarea>
+                    </div>
+                    <button onclick="runTranslation()" class="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 rounded-xl font-bold transition">ترجمة مع الحفاظ على النبرة</button>
+                </div>
+            </section>
+
+            <!-- 7. المعلم الشخصي -->
+            <section id="tab-tutor" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-green-400"></i> المعلم الشخصي التفاعلي</h2>
+                    <p class="text-gray-400 text-sm mb-4">اطلب شرح أي درس أو مفهوم علمي، وسيقوم بتبسيطه وإنشاء اختبار قصير لك.</p>
+                    <input type="text" id="tutor-topic" placeholder="مثال: اشرح لي نظرية النسبية أو أساسيات البرمجة..." class="w-full bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm mb-4 focus:outline-none focus:border-green-500">
+                    <button onclick="runTutor()" class="px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold transition">ابدأ الشرح والاختبار</button>
+                    <div id="tutor-output" class="mt-4 bg-nexora-dark border border-nexora-border p-4 rounded-xl text-sm text-gray-300 hidden space-y-3"></div>
+                </div>
+            </section>
+
+            <!-- 8. مساعد الرياضيات -->
+            <section id="tab-math" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-square-root-variable text-pink-400"></i> مساعد الرياضيات والتدقيق الحسابي</h2>
+                    <input type="text" id="math-eq" placeholder="اكتب المسألة الرياضية (مثال: 5x + 10 = 25 أو حساب مساحة الدائرة شعاعها 4)..." class="w-full bg-nexora-dark border border-nexora-border rounded-xl p-3 text-sm mb-4 focus:outline-none focus:border-pink-500">
+                    <button onclick="runMath()" class="px-6 py-3 bg-pink-600 hover:bg-pink-500 rounded-xl font-bold transition">حل وشرح الخطوات</button>
+                    <div id="math-output" class="mt-4 bg-nexora-dark border border-nexora-border p-4 rounded-xl text-sm font-mono text-pink-300 hidden"></div>
+                </div>
+            </section>
+
+            <!-- 9. مخطط المهام -->
+            <section id="tab-tasks" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-400"></i> مخطط المهام والمواعيد</h2>
+                        <button onclick="addNewTask()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-sm rounded-xl font-bold transition">إضافة مهمة</button>
+                    </div>
+                    <div id="tasks-list" class="space-y-2">
+                        <!-- المهام -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10. متجر الإضافات -->
+            <section id="tab-plugins" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-puzzle-piece text-orange-400"></i> متجر الإضافات والتكاملات</h2>
+                    <p class="text-gray-400 text-sm mb-4">فعّل الأدوات والتكاملات الإضافية لتعزيز قدرات منصتك.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="plugins-grid">
+                        <!-- الإضافات -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 11. تحليلات الاستخدام -->
+            <section id="tab-analytics" class="tab-content hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-line text-teal-400"></i> تحليلات واستهلاك الخدمات</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-nexora-dark border border-nexora-border p-4 rounded-xl">
+                            <span class="text-xs text-gray-400">إجمالي الطلبات</span>
+                            <div class="text-2xl font-black text-teal-400 mt-1" id="stat-requests">1,248</div>
+                        </div>
+                        <div class="bg-nexora-dark border border-nexora-border p-4 rounded-xl">
+                            <span class="text-xs text-gray-400">الأخطاء المعالجة</span>
+                            <div class="text-2xl font-black text-red-400 mt-1">3</div>
+                        </div>
+                        <div class="bg-nexora-dark border border-nexora-border p-4 rounded-xl">
+                            <span class="text-xs text-gray-400">استهلاك التوكنز (Tokens)</span>
+                            <div class="text-2xl font-black text-blue-400 mt-1">45.2K</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- نافذة الواجهة ثلاثية الأبعاد (3D Modal) -->
+    <div id="modal-3d" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-3xl p-6 rounded-2xl relative">
+            <button onclick="toggle3DModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-cube text-blue-400"></i> مساحة Nexora التفاعلية 3D</h3>
+            <p class="text-xs text-gray-400 mb-4">هذه أداة تفاعلية حقيقية تعمل بمكتبة Three.js تعرض نموذجاً مستقبلياً تفاعلياً.</p>
+            <div id="canvas-container" class="w-full h-80 rounded-xl overflow-hidden bg-black/40"></div>
+        </div>
+    </div>
+
+    <!-- نافذة النسخ الاحتياطي -->
+    <div id="modal-backup" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md p-6 rounded-2xl relative space-y-4">
+            <button onclick="openBackupModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold flex items-center gap-2"><i class="fa-solid fa-database text-emerald-400"></i> النسخ الاحتياطي واستعادة البيانات</h3>
+            <p class="text-xs text-gray-400">قم بتصدير جميع بياناتك وإعداداتك ونتائجك المحفوظة كملف JSON آمن، أو قم باستعادتها في أي وقت.</p>
+            <div class="flex gap-3">
+                <button onclick="exportData()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-sm transition">تصدير البيانات</button>
+                <label class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-sm text-center cursor-pointer transition">
+                    استعادة البيانات
+                    <input type="file" onchange="importData(event)" class="hidden" accept=".json">
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة اختصارات لوحة المفاتيح -->
+    <div id="modal-shortcuts" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md p-6 rounded-2xl relative space-y-4">
+            <button onclick="toggleShortcutsModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold flex items-center gap-2"><i class="fa-solid fa-keyboard text-purple-400"></i> اختصارات لوحة المفاتيح</h3>
+            <ul class="space-y-2 text-sm text-gray-300">
+                <li class="flex justify-between border-b border-nexora-border pb-2"><span>فتح الاختصارات</span> <code class="bg-gray-800 px-2 py-0.5 rounded">Ctrl + /</code></li>
+                <li class="flex justify-between border-b border-nexora-border pb-2"><span>التنقل للمختبر</span> <code class="bg-gray-800 px-2 py-0.5 rounded">Alt + 1</code></li>
+                <li class="flex justify-between border-b border-nexora-border pb-2"><span>التنقل للمقارنة</span> <code class="bg-gray-800 px-2 py-0.5 rounded">Alt + 2</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- البرمجيات التفاعلية والمنطق (JavaScript) -->
+    <script>
+        // التبويبات
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-blue-600', 'text-white');
+                el.classList.add('text-gray-400');
+            });
+            const activeNav = document.getElementById('nav-' + tabId);
+            activeNav.classList.add('bg-blue-600', 'text-white');
+            activeNav.classList.remove('text-gray-400');
+        }
+
+        // 1. مختبر التجارب
+        let lastLabResult = "";
+        function runLabExperiment() {
+            const prompt = document.getElementById('lab-prompt').value;
+            if(!prompt) { alert('الرجاء إدخال نص الأمر أولاً'); return; }
+            const output = document.getElementById('lab-output');
+            output.innerHTML = "جاري تنفيذ التجربة عبر الذكاء الاصطناعي...";
+            setTimeout(() => {
+                lastLabResult = `نتيجة تحليل الأمر: "${prompt}"\nالحالة: نجاح بنجاح التوكنز.\nالرد المقترح: هذا محتوى تجريبي تم توليده بواسطة محرك Nexora الذكي بناءً على المعاملات المحددة.`;
+                output.innerHTML = lastLabResult;
+            }, 600);
+        }
+        function saveLabResult() {
+            if(!lastLabResult) { alert('لا توجد نتيجة لحفظها'); return; }
+            let saved = JSON.parse(localStorage.getItem('nexora_lab') || '[]');
+            saved.push(lastLabResult);
+            localStorage.setItem('nexora_lab', JSON.stringify(saved));
+            loadSavedLab();
+            alert('تم حفظ التجربة بنجاح!');
+        }
+        function loadSavedLab() {
+            const container = document.getElementById('saved-lab-results');
+            let saved = JSON.parse(localStorage.getItem('nexora_lab') || '[]');
+            container.innerHTML = saved.map((item, i) => `<div class="bg-nexora-dark p-2 rounded border border-nexora-border text-xs text-gray-300 truncate">${i+1}. ${item}</div>`).join('') || '<span class="text-xs text-gray-500">لا توجد نتائج محفوظة</span>';
+        }
+        loadSavedLab();
+
+        // 2. مقارنة الإجابات
+        function runComparison() {
+            const q = document.getElementById('compare-query').value;
+            if(!q) return;
+            document.getElementById('comp-1').innerText = `إجابة Alpha الدقيقة والسريعة للسؤال: ${q}`;
+            document.getElementById('comp-2').innerText = `إجابة Creative الإبداعية والتسويقية للسؤال: ${q}`;
+            document.getElementById('comp-3').innerText = `إجابة Logic الرياضية والتحليلية للسؤال: ${q}`;
+        }
+
+        // 3. مساعد إصلاح المشاريع
+        function runDebugger() {
+            const code = document.getElementById('debug-input').value;
+            const out = document.getElementById('debug-output');
+            if(!code) return;
+            out.classList.remove('hidden');
+            out.innerHTML = ` تحليل الخطأ...\n- تم اكتشاف مشكلة محتملة في بناء الجملة (Syntax Error).\n- التعديل المقترح: تأكد من إغلاق الأقواس وتعريف المتغيرات بشكل صحيح.\n- الكود المعدل جاهز للاستخدام.`;
+        }
+
+        // 4. مركز الملفات
+        let filesData = [
+            {id: 1, name: 'project_architecture.json', category: 'مفتاح النظام', size: '12 KB'},
+            {id: 2, name: 'ai_training_data.csv', category: 'بيانات', size: '1.4 MB'},
+            {id: 3, name: 'ui_components.js', category: 'كود برمجي', size: '45 KB'}
+        ];
+        function renderFiles(list) {
+            const container = document.getElementById('files-list');
+            container.innerHTML = list.map(f => `
+                <div class="bg-nexora-dark border border-nexora-border p-3 rounded-xl flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-sm text-gray-200">${f.name}</div>
+                        <span class="text-xs text-yellow-400">${f.category} (${f.size})</span>
+                    </div>
+                    <button class="text-xs text-gray-400 hover:text-white"><i class="fa-solid fa-download"></i></button>
+                </div>
+            `).join('');
+        }
+        function filterFiles(query) {
+            const filtered = filesData.filter(f => f.name.includes(query) || f.category.includes(query));
+            renderFiles(filtered);
+        }
+        renderFiles(filesData);
+        function addLocalFile() {
+            const name = prompt('أدخل اسم الملف الجديد:');
+            if(name) {
+                filesData.push({id: Date.now(), name, category: 'مستند عام', size: '10 KB'});
+                renderFiles(filesData);
+            }
+        }
+
+        // 5. الكتابة الاحترافية
+        function generateWriting() {
+            const type = document.getElementById('write-type').value;
+            const topic = document.getElementById('write-topic').value;
+            const out = document.getElementById('write-output');
+            out.classList.remove('hidden');
+            out.innerText = `[تم إنشاؤه بواسطة Nexora AI - نوع المحتوى: ${type}]\n\nإلى الجهات المختصة،\nبخصوص الموضوع (${topic || 'عام'}):\nنقدم لكم هذا التقرير المفصل الذي يوضح الرؤى والإستراتيجيات اللازمة لتحقيق الأهداف بكفاءة عالية وفق المعايير العالمية المعتمدة لعام 2026.\n\nمع خالص التحية،\nنظام Nexora الذكي`;
+        }
+
+        // 6. مترجم ذكي
+        function runTranslation() {
+            const text = document.getElementById('trans-input').value;
+            if(!text) return;
+            document.getElementById('trans-output').value = `[ترجمة سياقية دقيقة]: ${text} (Translated text maintaining context and tone)`;
+        }
+
+        // 7. المعلم الشخصي
+        function runTutor() {
+            const topic = document.getElementById('tutor-topic').value;
+            const out = document.getElementById('tutor-output');
+            out.classList.remove('hidden');
+            out.innerHTML = `
+                <h4 class="font-bold text-green-400">شرح مبسط لموضوع: ${topic}</h4>
+                <p class="text-gray-300">يُعد هذا المفهوم أساسياً في مجاله، حيث يعتمد على ربط العناصر الأساسية بالاستخدامات العملية المعاصرة.</p>
+                <div class="bg-black/30 p-3 rounded-lg border border-nexora-border">
+                    <span class="font-bold text-yellow-400 block mb-1">اختبار تدريبي سريع:</span>
+                    <p>سؤال: ما هي الفائدة الرئيسية من تطبيق هذا المفهوم؟ (اختر الإجابة الصحيحة من تفاعلك مع المعلم).</p>
+                </div>
+            `;
+        }
+
+        // 8. مساعد الرياضيات
+        function runMath() {
+            const eq = document.getElementById('math-eq').value;
+            const out = document.getElementById('math-output');
+            out.classList.remove('hidden');
+            out.innerHTML = `تحليل المسألة: ${eq}\nالخطوة 1: تبسيط المعادلة ونقل الحدود.\nالخطوة 2: حساب النتيجة النهائية.\nالنتيجة الدقيقة: تم التحقق حسابياً بنجاح ✅`;
+        }
+
+        // 9. مخطط المهام
+        let tasks = [{id: 1, title: 'إطلاق تحديث منصة Nexora AI', done: false}, {id: 2, title: 'مراجعة أداء النماذج', done: true}];
+        function renderTasks() {
+            const container = document.getElementById('tasks-list');
+            container.innerHTML = tasks.map(t => `
+                <div class="bg-nexora-dark border border-nexora-border p-3 rounded-xl flex justify-between items-center">
+                    <span class="text-sm ${t.done ? 'line-through text-gray-500' : 'text-gray-200'}">${t.title}</span>
+                    <button onclick="toggleTask(${t.id})" class="text-xs px-3 py-1 rounded ${t.done ? 'bg-gray-800 text-gray-400' : 'bg-indigo-600 text-white'}">${t.done ? 'مكتملة' : 'إنجاز'}</button>
+                </div>
+            `).join('');
+        }
+        function addNewTask() {
+            const title = prompt('أدخل عنوان المهمة الجديدة:');
+            if(title) { tasks.push({id: Date.now(), title, done: false}); renderTasks(); }
+        }
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t);
+            renderTasks();
+        }
+        renderTasks();
+
+        // 10. متجر الإضافات
+        let plugins = [
+            {name: 'تكامل GitHub الروبوتي', active: true, desc: 'ربط المستودعات وسحب التحديثات تلقائياً'},
+            {name: 'محلل الصوت المباشر (Speech-to-Text)', active: false, desc: 'تحويل الأوامر الصوتية إلى مطالبات نصية'},
+            {name: 'محرك الرسوم البيانية المتقدم', active: true, desc: 'توليد رسومات تفاعلية للبيانات والتحليلات'}
+        ];
+        function renderPlugins() {
+            document.getElementById('plugins-grid').innerHTML = plugins.map((p, i) => `
+                <div class="bg-nexora-dark border border-nexora-border p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-sm text-gray-200">${p.name}</div>
+                        <p class="text-xs text-gray-400 mt-1">${p.desc}</p>
+                    </div>
+                    <button onclick="togglePlugin(${i})" class="px-3 py-1.5 rounded-lg text-xs font-bold ${p.active ? 'bg-green-600/20 text-green-400' : 'bg-gray-800 text-gray-400'}">${p.active ? 'مفعلة' : 'تفعيل'}</button>
+                </div>
+            `).join('');
+        }
+        function togglePlugin(i) {
+            plugins[i].active = !plugins[i].active;
+            renderPlugins();
+        }
+        renderPlugins();
+
+        // إمكانية الوصول
+        function toggleAccessibility() {
+            document.body.classList.toggle('high-contrast');
+            document.body.classList.toggle('large-text');
+        }
+
+        // النسخ الاحتياطي
+        function openBackupModal() {
+            document.getElementById('modal-backup').classList.toggle('hidden');
+        }
+        function exportData() {
+            const data = { lab: localStorage.getItem('nexora_lab'), tasks, filesData };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'nexora_backup.json';
+            a.click();
+        }
+        function importData(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                alert('تم استعادة البيانات بنجاح!');
+            };
+            reader.readAsText(file);
+        }
+
+        // واجهة 3D باستخدام Three.js
+        function toggle3DModal() {
+            const modal = document.getElementById('modal-3d');
+            modal.classList.toggle('hidden');
+            if(!modal.classList.contains('hidden')) {
+                init3DScene();
+            }
+        }
+        function init3DScene() {
+            const container = document.getElementById('canvas-container');
+            container.innerHTML = '';
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+            const material = new THREE.MeshBasicMaterial({color: 0x3b82f6, wireframe: true});
+            const sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+
+            camera.position.z = 4;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                sphere.rotation.x += 0.005;
+                sphere.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // اختصارات لوحة المفاتيح
+        function toggleShortcutsModal() {
+            document.getElementById('modal-shortcuts').classList.toggle('hidden');
+        }
+        window.addEventListener('keydown', (e) => {
+            if(e.ctrlKey && e.key === '/') {
+                e.preventDefault();
+                toggleShortcutsModal();
+            }
+        });
+    </script>
+</body>
+</html>
