@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080812">
+<title>NEXORA AI</title>
+<style>
+:root{--bg:#080812;--panel:#121225;--line:#292943;--text:#f7f5ff;--muted:#aaa7c4;--accent:#9875ff;--cyan:#4be0e5}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top right,#322052,transparent 40%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:1px solid var(--line);border-radius:12px;background:#201d38;color:white;padding:11px 15px}
+button:hover{border-color:var(--accent)}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+aside{padding:20px;border-left:1px solid var(--line);background:#090914}
+.logo{font-size:24px;font-weight:900;margin-bottom:25px}.logo span{color:var(--accent)}
+nav{display:grid;gap:8px}nav button{text-align:right;background:transparent}
+nav button.active{background:#2b214b;border-color:var(--accent)}
+main{padding:25px;max-width:1100px;width:100%;margin:auto}
+header{margin-bottom:22px}
+.eyebrow{color:var(--cyan);font-size:12px;letter-spacing:1px}
+h1{font-size:clamp(28px,4vw,42px);margin:7px 0}
+.muted,p{color:var(--muted);line-height:1.8}
+.card{background:linear-gradient(145deg,#17172b,#10101d);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:15px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.page{display:none}.page.active{display:block}
+.field{width:100%;padding:13px;border-radius:12px;background:#090914;border:1px solid var(--line);color:white;margin:8px 0;outline:none}
+textarea.field{min-height:130px;resize:vertical}
+.primary{background:linear-gradient(120deg,#8059ee,#4b49bd);border:0;font-weight:bold}
+.output{white-space:pre-wrap;overflow-wrap:anywhere;padding:14px;border:1px solid var(--line);background:#090914;border-radius:12px;min-height:55px;margin-top:12px}
+.notice{font-size:13px;padding:12px;border:1px solid #6a5128;background:#241d11;color:#f5dca6;border-radius:12px;line-height:1.8}
+.stat{background:#0d0d19;border:1px solid var(--line);border-radius:14px;padding:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}
+.history{display:grid;gap:8px;margin-top:12px}
+.history button{text-align:right}
+iframe{width:100%;height:250px;background:white;border:1px solid var(--line);border-radius:12px}
+@media(max-width:760px){.app{grid-template-columns:1fr}aside{border:0;border-bottom:1px solid var(--line);padding:12px}.logo{margin:0 5px 10px}nav{display:flex;overflow:auto}nav button{white-space:nowrap;padding:9px 12px}main{padding:16px}.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<div class="logo">NEXORA<span> AI</span></div>
+<nav>
+<button class="active" data-page="home">✦ الرئيسية</button>
+<button data-page="chat">◉ المساعد الذكي</button>
+<button data-page="lab">⌘ مختبر المطالبات</button>
+<button data-page="media">▧ الصور والفيديو</button>
+<button data-page="code">⟨/⟩ Code Studio</button>
+<button data-page="files">▤ الملفات</button>
+<button data-page="settings">⚙ الإعدادات</button>
+</nav>
+</aside>
+
+<main>
+<header>
+<div class="eyebrow">YOUR AI WORKSPACE</div>
+<h1 id="title">مساحة أفكارك تبدأ هنا.</h1>
+<div class="muted">مساعدك الذكي للكتابة والبرمجة والإبداع.</div>
+</header>
+
+<section id="home" class="page active">
+<div class="card">
+<div class="eyebrow">WELCOME TO NEXORA</div>
+<h2>فكرتك تستحق أن تصبح حقيقة.</h2>
+<p>مركز أدوات ذكي بتصميم عصري. اربطه بخادم AI لتفعيل الردود الحقيقية.</p>
+<button class="primary" onclick="go('chat')">ابدأ الآن ←</button>
+</div>
+<div class="stats">
+<div class="stat">المحادثات<b id="chatCount">0</b></div>
+<div class="stat">المطالبات<b id="promptCount">0</b></div>
+<div class="stat">الاتصال<b id="status">غير متصل</b></div>
+</div>
+<div class="grid">
+<div class="card"><h3>🤖 المساعد الذكي</h3><p>اسأل واكتب واستكشف.</p><button onclick="go('chat')">فتح</button></div>
+<div class="card"><h3>🎨 استوديو الوسائط</h3><p>جهّز أوصاف الصور والفيديو.</p><button onclick="go('media')">فتح</button></div>
+<div class="card"><h3>💻 Code Studio</h3><p>اكتب HTML وشاهد المعاينة.</p><button onclick="go('code')">فتح</button></div>
+</div>
+</section>
+
+<section id="chat" class="page">
+<div class="card">
+<h2>المساعد الذكي</h2>
+<textarea id="question" class="field" placeholder="اكتب رسالتك هنا..."></textarea>
+<button class="primary" onclick="send()">إرسال</button>
+<button onclick="saveChat()">حفظ المحادثة</button>
+<div id="answer" class="output">ستظهر الإجابة هنا.</div>
+<h3>المحادثات المحفوظة</h3><div id="chats" class="history"></div>
+</div>
+</section>
+
+<section id="lab" class="page">
+<div class="card">
+<h2>مختبر المطالبات</h2>
+<textarea id="prompt" class="field" placeholder="اكتب مطالبة الذكاء الاصطناعي..."></textarea>
+<button class="primary" onclick="savePrompt()">حفظ المطالبة</button>
+<button onclick="copyText('prompt')">نسخ</button>
+<div id="prompts" class="history"></div>
+</div>
+</section>
+
+<section id="media" class="page">
+<div class="grid">
+<div class="card">
+<h2>🎨 وصف صورة</h2>
+<textarea id="imagePrompt" class="field" placeholder="صف الصورة التي تريدها..."></textarea>
+<button class="primary" onclick="makePrompt('imagePrompt','imageOut','صورة عالية الجودة، إضاءة احترافية وتفاصيل دقيقة: ')">تجهيز الوصف</button>
+<div id="imageOut" class="output"></div>
+</div>
+<div class="card">
+<h2>🎬 وصف فيديو</h2>
+<textarea id="videoPrompt" class="field" placeholder="صف الفيديو وحركة الكاميرا..."></textarea>
+<button class="primary" onclick="makePrompt('videoPrompt','videoOut','فيديو سينمائي، حركة كاميرا سلسة وإضاءة احترافية: ')">تجهيز الوصف</button>
+<div id="videoOut" class="output"></div>
+</div>
+</div>
+<div class="notice">هذه الواجهة تجهّز الأوصاف فقط. إنشاء الصور والفيديو فعليًا يحتاج API يدعم التوليد.</div>
+</section>
+
+<section id="code" class="page">
+<div class="card">
+<h2>NEXORA Code Studio</h2>
+<textarea id="editor" class="field" style="direction:ltr;min-height:220px"><!doctype html>
+<html><body style="font-family:Arial;padding:20px">
+<h1>Hello NEXORA!</h1><p>ابدأ كتابة مشروعك.</p>
+</body></html></textarea>
+<button class="primary" onclick="preview()">معاينة الكود</button>
+<button onclick="downloadCode()">تنزيل HTML</button>
+<iframe id="frame" sandbox title="Code preview"></iframe>
+</div>
+</section>
+
+<section id="files" class="page">
+<div class="card">
+<h2>مركز الملفات</h2>
+<input type="file" class="field" id="file" accept=".txt,.md,.csv,.json,.html,.css,.js">
+<div id="fileOut" class="output">اختر ملفًا نصيًا لعرض محتواه محليًا.</div>
+</div>
+</section>
+
+<section id="settings" class="page">
+<div class="card">
+<h2>إعدادات الخادم</h2>
+<p>أدخل رابط Cloudflare Worker المنشور.</p>
+<input id="backend" class="field" placeholder="https://your-worker.workers.dev" style="direction:ltr">
+<button class="primary" onclick="saveBackend()">حفظ الرابط</button>
+<button onclick="testBackend()">اختبار الاتصال</button>
+<button onclick="backup()">تصدير نسخة احتياطية</button>
+<div id="settingsOut" class="output"></div>
+<div class="notice">لا تضع مفتاح API في هذه الصفحة. احفظه في إعدادات الخادم كـ Secret.</div>
+</div>
+</section>
+
+<div class="muted" style="font-size:12px;margin:25px 2px">NEXORA AI • Starter Edition</div>
+</main>
+</div>
+
+<script>
+const KEY='nexora_ai_github_v1';
+let data;
+try{data=JSON.parse(localStorage.getItem(KEY))||{chats:[],prompts:[],backend:''}}
+catch{data={chats:[],prompts:[],backend:''}}
+
+function persist(){localStorage.setItem(KEY,JSON.stringify(data));refresh()}
+function refresh(){
+ document.getElementById('chatCount').textContent=data.chats.length;
+ document.getElementById('promptCount').textContent=data.prompts.length;
+ const ch=document.getElementById('chats'),pr=document.getElementById('prompts');
+ ch.innerHTML='';pr.innerHTML='';
+ data.chats.slice().reverse().forEach(x=>{let b=document.createElement('button');b.textContent=x.title;b.onclick=()=>document.getElementById('answer').textContent=x.text;ch.appendChild(b)});
+ data.prompts.slice().reverse().forEach(x=>{let b=document.createElement('button');b.textContent=x.slice(0,90);b.onclick=()=>document.getElementById('prompt').value=x;pr.appendChild(b)});
+}
+function go(id){
+ document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===id));
+ document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));
+ const titles={home:'مساحة أفكارك تبدأ هنا.',chat:'المساعد الذكي',lab:'مختبر المطالبات',media:'استوديو الصور والفيديو',code:'NEXORA Code Studio',files:'مركز الملفات',settings:'الإعدادات'};
+ document.getElementById('title').textContent=titles[id]||'NEXORA AI';
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.page));
+
+async function send(){
+ const q=document.getElementById('question').value.trim(),out=document.getElementById('answer');
+ if(!q){out.textContent='اكتب سؤالك أولًا.';return}
+ if(!data.backend){out.textContent='افتح الإعدادات وأضف رابط Backend أولًا. لم يتم إرسال الرسالة.';return}
+ out.textContent='جارٍ الاتصال...';
+ try{
+  const r=await fetch(data.backend.replace(/\/$/,'')+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})});
+  const d=await r.json();
+  if(!r.ok)throw Error(d.error||'HTTP '+r.status);
+  out.textContent=d.reply||'لم يصل رد.';
+ }catch(e){out.textContent='فشل الاتصال: '+e.message}
+}
+function saveChat(){
+ const q=document.getElementById('question').value.trim();
+ if(!q)return alert('اكتب رسالة أولًا');
+ data.chats.push({title:q.slice(0,55),text:'س: '+q+'\n\n'+document.getElementById('answer').textContent});
+ persist();
+}
+function savePrompt(){const p=document.getElementById('prompt').value.trim();if(!p)return;data.prompts.push(p);persist()}
+function copyText(id){navigator.clipboard.writeText(document.getElementById(id).value).then(()=>alert('تم النسخ')).catch(()=>alert('حدد النص وانسخه'))}
+function makePrompt(input,out,prefix){const v=document.getElementById(input).value.trim();document.getElementById(out).textContent=v?prefix+v:'اكتب وصفًا أولًا.'}
+function preview(){document.getElementById('frame').srcdoc=document.getElementById('editor').value}
+function downloadCode(){
+ const b=new Blob([document.getElementById('editor').value],{type:'text/html'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nexora-project.html';a.click();URL.revokeObjectURL(a.href);
+}
+document.getElementById('file').addEventListener('change',async e=>{
+ const f=e.target.files[0];if(!f)return;
+ document.getElementById('fileOut').textContent='الملف: '+f.name+'\n\n'+(await f.text()).slice(0,40000);
+});
+function saveBackend(){
+ data.backend=document.getElementById('backend').value.trim().replace(/\/$/,'');
+ persist();document.getElementById('settingsOut').textContent='تم حفظ رابط الخادم في هذا المتصفح.';
+}
+async function testBackend(){
+ const out=document.getElementById('settingsOut');
+ if(!data.backend){out.textContent='أدخل الرابط أولًا.';return}
+ out.textContent='جارٍ الاختبار...';
+ try{
+  const r=await fetch(data.backend+'/api/health'),d=await r.json();
+  if(!r.ok)throw Error('HTTP '+r.status);
+  out.textContent='نجح الاتصال: '+JSON.stringify(d);
+  document.getElementById('status').textContent='متصل';
+ }catch(e){out.textContent='تعذر الاتصال: '+e.message;document.getElementById('status').textContent='غير متصل'}
+}
+function backup(){
+ const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nexora-backup.json';a.click();URL.revokeObjectURL(a.href);
+}
+document.getElementById('backend').value=data.backend||'';
+refresh();preview();
+</script>
+</body>
+</html>
